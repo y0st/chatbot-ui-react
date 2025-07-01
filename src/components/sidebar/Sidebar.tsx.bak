@@ -1,0 +1,122 @@
+import React, { useState, useEffect, FC } from 'react';
+import { Bars3Icon, PlusIcon, Cog6ToothIcon, EllipsisVerticalIcon } from "@heroicons/react/24/solid";
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+import SidebarContent from './SidebarContent';
+import SidebarCreateButtons from './SidebarCreateButtons';
+import type { Chat, Preset } from '../../types';
+
+interface SidebarProps {
+  showSidebar: boolean;
+  toggleSidebar: () => void;
+}
+
+const Sidebar: FC<SidebarProps> = ({ showSidebar, toggleSidebar }) => {
+  const [activeTab, setActiveTab] = useState<'chats' | 'presets'>('chats');
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [presets, setPresets] = useState<Preset[]>([]);
+  const [activeChatId, setActiveChatId] = useState<string | null>(null);
+
+  // 模拟数据获取
+  useEffect(() => {
+    const mockChats: Chat[] = [
+      { id: '1', title: 'AI 技术讨论', createdAt: new Date(), updatedAt: new Date() },
+      { id: '2', title: 'React 项目优化', createdAt: new Date(), updatedAt: new Date() },
+      { id: '3', title: 'Tailwind CSS 实践', createdAt: new Date(), updatedAt: new Date() },
+    ];
+
+    const mockPresets: Preset[] = [
+      { id: 'p1', title: '代码生成器', content: '{"model": "gpt-4", "temperature": 0.3}' },
+      { id: 'p2', title: '创意写作', content: '{"model": "gpt-3.5", "temperature": 1.2}' },
+      { id: 'p3', title: '问题解答', content: '{"model": "gpt-4", "temperature": 0.7}' },
+    ];
+
+    setChats(mockChats);
+    setPresets(mockPresets);
+  }, []);
+
+  const handleChatClick = (chatId: string) => {
+    setActiveChatId(chatId);
+  };
+
+  return (
+    <div 
+      className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out ${
+        showSidebar ? 'translate-x-0' : '-translate-x-full'
+      } bg-gray-800 text-white shadow-lg`}
+    >
+      {/* 侧边栏头部 */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-700">
+        <div className="flex items-center space-x-2">
+          <Bars3Icon className="h-6 w-6 text-gray-400" /> {/* 菜单图标 */}
+          <h2 className="text-xl font-bold">数据分析</h2>
+        </div>
+        <button 
+          className="p-2 rounded-md hover:bg-gray-700 transition-colors"
+          onClick={toggleSidebar}
+        >
+          <EllipsisVerticalIcon className="h-5 w-5 text-gray-400" /> {/* 更多选项图标 */}
+        </button>
+      </div>
+
+      {/* 新建按钮区域 */}
+      <SidebarCreateButtons 
+        onCreateChat={() => console.log('新建聊天')}
+        onCreatePreset={() => console.log('新建预设')}
+      />
+
+      {/* 标签页切换 */}
+      <Tabs 
+        selectedIndex={activeTab === 'chats' ? 0 : 1}
+        onSelect={(index) => setActiveTab(index === 0 ? 'chats' : 'presets')}
+      >
+        <TabList className="flex border-b border-gray-700">
+          <Tab 
+            className={`flex-1 py-2 text-center ${activeTab === 'chats' ? 'bg-gray-700 text-white' : 'hover:bg-gray-700/50'} transition-colors`}
+          >
+            聊天
+          </Tab>
+          <Tab 
+            className={`flex-1 py-2 text-center ${activeTab === 'presets' ? 'bg-gray-700 text-white' : 'hover:bg-gray-700/50'} transition-colors`}
+          >
+            案例
+          </Tab>
+        </TabList>
+
+        {/* 聊天内容区域 */}
+        <TabPanel>
+          <SidebarContent 
+            items={chats}
+            activeId={activeChatId}
+            onItemClick={handleChatClick}
+            itemType="chats"
+            onDeleteItem={(id) => setChats(chats.filter(chat => chat.id !== id))}
+          />
+        </TabPanel>
+
+        {/* 预设内容区域 */}
+        <TabPanel>
+          <SidebarContent 
+            items={presets}
+            activeId={null}
+            onItemClick={(id) => console.log('选择预设:', id)}
+            itemType="presets"
+            onDeleteItem={(id) => setPresets(presets.filter(preset => preset.id !== id))}
+          />
+        </TabPanel>
+      </Tabs>
+
+      {/* 底部设置 */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700">
+        <button 
+          className="w-full flex items-center justify-center space-x-2 p-2 rounded-md hover:bg-gray-700 transition-colors"
+        >
+          <Cog6ToothIcon className="h-5 w-5" /> {/* 设置图标 */}
+          <span>设置</span>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Sidebar;
