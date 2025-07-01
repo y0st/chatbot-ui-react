@@ -1,0 +1,70 @@
+import React, { FC } from 'react';
+import { TrashIcon, ChatBubbleLeftIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/solid"; // 导入 Heroicons 图标
+
+interface ItemBase {
+  id: string;
+  title: string;
+}
+
+interface SidebarContentProps<T extends ItemBase> {
+  items: T[];
+  activeId: string | null;
+  onItemClick: (id: string) => void;
+  itemType: 'chats' | 'presets';
+  onDeleteItem: (id: string) => void;
+}
+
+const SidebarContent: FC<SidebarContentProps<any>> = ({ 
+  items, 
+  activeId, 
+  onItemClick, 
+  itemType,
+  onDeleteItem 
+}) => {
+  return (
+    <div className="h-[calc(100%-160px)] overflow-y-auto">
+      {items.length === 0 ? (
+        <div className="p-4 text-center text-gray-400">
+          No {itemType} yet. Create one!
+        </div>
+      ) : (
+        <ul>
+          {items.map(item => (
+            <li 
+              key={item.id}
+              className={`flex items-center justify-between p-3 ${
+                activeId === item.id ? 'bg-gray-700' : 'hover:bg-gray-700/50'
+              } transition-colors cursor-pointer`}
+              onClick={() => onItemClick(item.id)}
+            >
+              <div className="flex items-center space-x-3"> {/* 添加间距 */}
+                {/* 根据类型显示不同图标 */}
+                {itemType === 'chats' ? (
+                  <span className="h-5 w-5 text-gray-400">
+                    <ChatBubbleLeftRightIcon />
+                  </span>
+                ) : (
+                  <span className="h-5 w-5 text-gray-400">
+                    <ChatBubbleLeftIcon />
+                  </span>
+                )}
+                <span className="truncate text-sm font-medium">{item.title}</span> {/* 优化字体样式 */}
+              </div>
+              <button 
+                className="p-1 text-gray-400 hover:text-white transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteItem(item.id);
+                }}
+              >
+                <TrashIcon className="h-4 w-4" /> {/* 使用 Heroicons 垃圾桶图标 */}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+export default SidebarContent;

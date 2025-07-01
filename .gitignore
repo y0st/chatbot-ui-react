@@ -1,0 +1,30 @@
+# 👉 依赖目录
+node_modules/
+
+# 👉 构建输出目录（按需忽略）
+dist/
+.vite/
+
+# 👉 系统文件
+.DS_Store
+Thumbs.db
+
+# 👉 环境变量
+.env
+.env.*.local
+
+# 👉 日志文件
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 👉 编辑器相关（VSCode、JetBrains等）
+.vscode/
+.idea/
+
+# 👉 包管理器文件锁（可选）
+# 如果你只允许某一种锁文件存在，取消注释其他行
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
